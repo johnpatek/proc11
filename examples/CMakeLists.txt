@@ -1,0 +1,2 @@
+add_subdirectory(process_wait)
+add_subdirectory(process_terminate)
