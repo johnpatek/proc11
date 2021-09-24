@@ -33,7 +33,9 @@ jobs:
       working-directory: ${{github.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build .
+      run: |
+        pwd
+        cmake --build .
   test:
     needs: build
     strategy:
@@ -44,7 +46,7 @@ jobs:
     steps:
     - name: Ubuntu Test
       run: ${{github.workspace}}/build\test\Debug\unittest.exe
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'ubuntu-latest'
     - name: Windows Test
       run: ${{github.workspace}}/build/test/unittest
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'windows-latest'
