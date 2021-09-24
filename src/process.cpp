@@ -8,8 +8,8 @@ proc11::process::process(const std::string& path)
 
 void proc11::process::execute(std::vector<char*>& args)
 {
-#if defined(WIN32)
-    // TODO: Windows
+#if defined(_WIN32)
+
 #else
     pid_t pid = fork();
     if (pid < 0)
@@ -30,17 +30,24 @@ void proc11::process::execute(std::vector<char*>& args)
 
 void proc11::process::send_signal(proc11::signal_type signal)
 {
+#if defined(_WIN32)
+    if (true)
+    {
+        
+    }
+#else
     if (kill(_process_id,signal) == -1)
     {
         throw std::runtime_error("kill failed: " + errno);
     }
+#endif
 }
 
 
 void proc11::process::wait()
 {
-#if defined(WIN32)
-    // TODO: Windows
+#if defined(_WIN32)
+    
 #else
     if (_process_id > 0)
     {

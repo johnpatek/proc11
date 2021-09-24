@@ -8,8 +8,11 @@ namespace proc11
 class signal_handler
 {
 public:
+#if defined(_WIN32)
+    signal_handler();
+#else
     signal_handler() = default;
-    
+#endif    
     signal_handler(const signal_handler& copy) = delete;
 
     signal_handler(signal_handler&& copy) = default;
@@ -25,10 +28,15 @@ public:
     void dispatch();
 
     void shutdown();
-
+#if defined(_WIN32)
+    static std::queue<signal_type> _pending;
+    static std::atomic<bool> _initialized;
 private:
-    bool _running;
+#else
+private:
     sigset_t _base_sigset;
+#endif
+    bool _running;
     std::map<signal_type,std::function<void(signal_type)>> _callbacks;
 };
 

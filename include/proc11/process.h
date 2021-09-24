@@ -3,9 +3,6 @@
 
 #include "common.h"
 
-#define DEBUGLN(message) std::cerr << message << std::endl
-
-
 namespace proc11
 {
 
@@ -14,6 +11,11 @@ class process
 private:
 
 public:
+#if defined(_WIN32)
+    typedef DWORD id;
+#else
+    
+#endif
     process() = default;
 
     process(const std::string& path);
