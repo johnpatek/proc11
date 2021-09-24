@@ -12,6 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
     - name: Ubuntu Ubuntu
       run: sudo apt update -y
       if: matrix.os == 'ubuntu-latest'
