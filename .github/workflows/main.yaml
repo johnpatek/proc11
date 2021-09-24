@@ -12,13 +12,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Ubuntu Ubuntu
-    - run: sudo apt update -y
+      run: sudo apt update -y
       if: matrix.os == 'ubuntu-latest'
     - name: Ubuntu Install
-    - run: sudo apt install cmake make g++ -y
+      run: sudo apt install cmake make g++ -y
       if: matrix.os == 'ubuntu-latest'
     - name: Ubuntu build
-    - run: |
+      run: |
         mkdir build && cd build
         cmake .. && make
       if: matrix.os == 'ubuntu-latest'      
