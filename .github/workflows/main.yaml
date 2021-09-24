@@ -44,8 +44,8 @@ jobs:
     - name: Ubuntu Test
       run: |
         build\test\Debug\unittest.exe
-      if: os.matrix == 'windows-latest'
+      if: matrix.os == 'windows-latest'
     - name: Ubuntu Test
       run: |
         build/test/unittest
-      if: os.matrix == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest'
