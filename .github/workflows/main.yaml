@@ -34,3 +34,18 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build .
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Ubuntu Test
+      run: |
+        build\test\Debug\unittest.exe
+      if: os.matrix == 'windows-latest'
+    - name: Ubuntu Test
+      run: |
+        build/test/unittest
+      if: os.matrix == 'ubuntu-latest'
