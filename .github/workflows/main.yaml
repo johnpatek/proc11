@@ -43,10 +43,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Ubuntu Test
-      run: |
-        build\test\Debug\unittest.exe
+      run: ${{github.workspace}}/build\test\Debug\unittest.exe
       if: matrix.os == 'windows-latest'
     - name: Windows Test
-      run: |
-        build/test/unittest
+      run: ${{github.workspace}}/build/test/unittest
       if: matrix.os == 'ubuntu-latest'
