@@ -8,7 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest]
+        os: [ ubuntu-latest ]
+        #, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -33,17 +34,21 @@ jobs:
       working-directory: ${{github.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build .
+      run: |
+        cmake --build .
+        ls
   test:
     needs: build
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest]
+        os: [ ubuntu-latest ]
+        #, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Ubuntu Test
-      run: ${{github.workspace}}/build/test/unittest  
+      run: ls
+      # run: ${{github.workspace}}/build/test/unittest  
       if: matrix.os == 'ubuntu-latest'
     - name: Windows Test
       run: ${{github.workspace}}\build\test\Debug\unittest.exe
