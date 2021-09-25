@@ -1,8 +1,6 @@
 name: main
 
-on: [push]
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+on: [push]  
 jobs:
   build:
     strategy:
@@ -11,9 +9,11 @@ jobs:
         os: [ ubuntu-latest, windows-latest]
         include:
           - os: ubuntu-latest
-            UNIT_TEST: ${{github.workspace}}/build/test/unittest
+            env:
+              UNIT_TEST: ${{github.workspace}}/build/test/unittest
           - os: windows-latest
-            UNIT_TEST: ${{github.workspace}}\build\test\Debug\unittest.exe
+            env:
+              UNIT_TEST: ${{github.workspace}}\build\test\Debug\unittest.exe
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
