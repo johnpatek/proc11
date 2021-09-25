@@ -1,19 +1,14 @@
 name: main
 
-on: [push]  
+on: [push]
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            env:
-              UNIT_TEST: ${{github.workspace}}/build/test/unittest
-          - os: windows-latest
-            env:
-              UNIT_TEST: ${{github.workspace}}\build\test\Debug\unittest.exe
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -41,5 +36,13 @@ jobs:
       run: |
         cmake --build .
     - name: Unit Test
-      run: ${{UNIT_TEST}}
-      
+      shell: bash
+      run: |
+        if [ ${{matrix.os}} == 'windows-latest' ]
+        then
+          echo windows
+        fi
+        if [ ${{matrix.os}} == 'ubuntu-latest' ]
+        then
+          echo ubuntu
+        fi
