@@ -38,11 +38,11 @@ jobs:
     - name: Unit Test
       shell: bash
       run: |
-        if [ ${{matrix.os}} == 'windows-latest' ]
-        then
-          echo windows
-        fi
         if [ ${{matrix.os}} == 'ubuntu-latest' ]
         then
-          echo ubuntu
+          ${{github.workspace}}/build/test/unittest
+        fi
+        if [ ${{matrix.os}} == 'windows-latest' ]
+        then
+          ${{github.workspace}}/build/test/Debug/unittest.exe
         fi
