@@ -44,5 +44,5 @@ jobs:
         fi
         if [ ${{matrix.os}} == 'windows-latest' ]
         then
-          ${{github.workspace}}/build/test/Debug/unittest.exe
+          ${{github.workspace}}\build\test\Debug\unittest.exe
         fi
