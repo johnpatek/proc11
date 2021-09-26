@@ -1,120 +1,73 @@
 #include "proc11/signal_handler.h"
 
-
-#if defined(_WIN32)
-
-void handler_function(int signal)
+namespace proc11
 {
-    if(!proc11::signal_handler::_initialized.load())
+
+std::unique_ptr<signal_handler> signal_handler::_global_handler(nullptr);
+
+void signal_handler::on_signal(int signal)
+{
+    map_type::iterator callback_iterator;
+    callback_iterator = _global_handler->_callback_map.find(
+        static_cast<signal_type>(signal));
+    if (callback_iterator == _global_handler->_callback_map.end())
     {
-        throw std::runtime_error("no signal handler exists for this process");
+        throw std::runtime_error("no callback registered for signal " + signal);
     }
-    proc11::signal_handler::_pending.emplace(
-        static_cast<proc11::signal_type>(signal));
+    callback_iterator->second(callback_iterator->first);
 }
 
-
-proc11::signal_handler::signal_handler()
+signal_handler::signal_handler(signal_handler&& move)
 {
-    if (_initialized.load())
+    if (_global_handler.get() != nullptr)
     {
-        throw std::runtime_error("signal handler already exists for this process");
+        throw std::runtime_error("unable to move dispatched signal handler");
     }
-    _initialized.store(true);
+    _callback_map = std::move(move._callback_map);
 }
-#endif
 
-
-proc11::signal_handler::~signal_handler()
+signal_handler::~signal_handler()
 {
-    if (_running)
+    if (_global_handler.get() != nullptr)
     {
         shutdown();
     }
 }
 
-void proc11::signal_handler::register_callback(
-    proc11::signal_type signal,
-    std::function<void(proc11::signal_type)>& callback)
+void signal_handler::add_callback(signal_type signal, signal_callback_type callback)
 {
-    _callbacks.emplace(signal,callback);
-#if defined(_WIN32)
-    std::signal(signal,handler_function);
-#else
-    sigaddset(&_base_sigset,signal);
-#endif
+    if (_callback_map.find(signal) != _callback_map.end())
+    {
+        throw std::runtime_error("callback already registered for signal " + signal);
+    }
+    _callback_map.emplace(signal,callback);
+    std::signal(signal,signal_handler::on_signal);
 }
 
-void proc11::signal_handler::remove_callback(
-    proc11::signal_type signal)
+void signal_handler::remove_callback(signal_type signal)
 {
-    _callbacks.erase(signal);
-#if defined(_WIN32)
     std::signal(signal,SIG_DFL);
-#else    
-    sigdelset(&_base_sigset,signal);
-#endif
+    map_type::iterator callback_iterator;
+    callback_iterator = _callback_map.find(signal);
+    if (callback_iterator == _callback_map.end())
+    {
+        throw std::runtime_error("no callback registered for signal " + signal);
+    }
+    _callback_map.erase(callback_iterator);
 }
 
-void proc11::signal_handler::dispatch()
+void signal_handler::dispatch()
 {
-    signal_type current_signal;
-#if defined(_WIN32)
-    while(_running)
+    if (_global_handler.get() != nullptr)
     {
-        while(!_pending.empty())
-        {
-            current_signal = _pending.front();
-            std::function<void(signal_type)>& callback = _callbacks.at(current_signal);
-            if(callback)
-            {
-                callback(current_signal);
-            }
-            _pending.pop();
-        }
+        throw std::runtime_error("another signal handler already dispatched");
     }
-#else
-    sigset_t pending_sigset;
-    _running = true;
-    while(_running)
-    {
-        std::memcpy(&pending_sigset,&_base_sigset,sizeof(sigset_t));
-        
-        if (sigprocmask(SIG_SETMASK,&pending_sigset,nullptr) < 0)
-        {
-            throw std::runtime_error("error: sigprocmask " + errno);
-        }
-        
-        if (sigpending(&pending_sigset) < 0)
-        {
-            throw std::runtime_error("error: sigpending " + errno);    
-        }
-
-        std::for_each(
-            _callbacks.begin(),
-            _callbacks.end(),
-        [&](const std::pair<signal_type,std::function<void(signal_type)>>& callback)
-        {
-            current_signal = callback.first;
-            if(sigismember(&pending_sigset,current_signal) == 1)
-            {
-                callback.second(callback.first);
-            }
-        });
-    }
-#endif
+    _global_handler = std::unique_ptr<signal_handler>(this);
 }
 
-void proc11::signal_handler::shutdown()
+void signal_handler::shutdown()
 {
-    _running = false;
+    _global_handler.release();
+}
 
-    for (const std::pair<signal_type,std::function<void(signal_type)>>& callback : _callbacks)
-    {
-        remove_callback(callback.first);
-    }
-
-#if defined(_WIN32)    
-    _initialized.store(false);
-#endif
 }

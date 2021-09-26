@@ -15,7 +15,7 @@ int main(int argc, const char ** argv)
         handler.shutdown();
     });
 
-    handler.register_callback(proc11::signal_type::PROC11_SIGINT,callback);
+    handler.add_callback(proc11::signal_type::PROC11_SIGINT,callback);
 
     handler.dispatch();
 
