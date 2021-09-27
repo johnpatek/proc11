@@ -34,5 +34,9 @@ private:
     map_type _callback_map;
 };
 
+void kill(process_id_type process_id,signal_type signal);
+
+void raise(signal_type signal);
+
 }
 #endif

@@ -44,15 +44,16 @@ public:
         execute(args);
     }
 
-
-    void send_signal(signal_type signal);
+    process_id_type id() const;
 
     void wait();
 
 private:
     void execute(std::vector<char*>& args);
-    process_handle_type _process_id;
+    process_id_type _process_id;
 };
+
+process_id_type current_process_id();
 
 }
 

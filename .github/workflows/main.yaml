@@ -34,7 +34,7 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: |
-        cmake --build .
+        cmake --build . --parallel 4
     - name: Unit Test
       shell: bash
       run: |

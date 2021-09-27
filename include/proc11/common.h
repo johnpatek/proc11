@@ -41,9 +41,9 @@ enum signal_type
     SIGNALDEF(SIGFPE)
 };
 #ifdef _WIN32
-    typedef DWORD process_handle_type;
+    typedef DWORD process_id_type;
 #else
-    typedef pid_t process_handle_type;
+    typedef pid_t process_id_type;
 #endif
 }
 #endif

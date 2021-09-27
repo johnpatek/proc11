@@ -2,6 +2,6 @@
 #define PROC11_H
 
 #include <proc11/process.h>
-#include <proc11/signal_handler.h>
+#include <proc11/signal.h>
 
 #endif

@@ -1,4 +1,4 @@
-#include "proc11/signal_handler.h"
+#include "proc11/signal.h"
 
 namespace proc11
 {
@@ -68,6 +68,41 @@ void signal_handler::dispatch()
 void signal_handler::shutdown()
 {
     _global_handler.release();
+}
+
+void kill(process_id_type process_id,signal_type signal)
+{
+#if defined(_WIN32)
+    // TODO: implement for Windows
+#else
+    if(::kill(process_id,signal) < 0)
+    {
+        std::string error_message;
+        switch(errno)
+        {
+            case EINVAL:
+                error_message = "invalid signal code";
+                break;
+            case EPERM:
+                error_message = "permission denied";
+                break;
+            case ESRCH:
+                error_message = "invalid pid";
+                break;
+            default:
+                error_message = "unknown error";
+        }
+        throw std::runtime_error(error_message);
+    }
+#endif
+}
+
+void raise(signal_type signal)
+{
+    if (std::raise(static_cast<int>(signal)) < 0)
+    {
+        throw std::runtime_error("failed to raise signal " + signal);
+    }    
 }
 
 }

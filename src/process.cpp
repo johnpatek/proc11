@@ -1,12 +1,15 @@
 #include "proc11/process.h"
 
-proc11::process::process(const std::string& path)
+namespace proc11
+{
+
+process::process(const std::string& path)
 {
     std::vector<std::string> args;
     execute(path,args.begin(),args.end());
 }
 
-void proc11::process::execute(std::vector<char*>& args)
+void process::execute(std::vector<char*>& args)
 {
 #if defined(_WIN32)
 
@@ -28,23 +31,12 @@ void proc11::process::execute(std::vector<char*>& args)
 #endif
 }
 
-void proc11::process::send_signal(proc11::signal_type signal)
+process_id_type process::id() const
 {
-#if defined(_WIN32)
-    if (true)
-    {
-        
-    }
-#else
-    if (kill(_process_id,signal) == -1)
-    {
-        throw std::runtime_error("kill failed: " + errno);
-    }
-#endif
+    return _process_id;
 }
 
-
-void proc11::process::wait()
+void process::wait()
 {
 #if defined(_WIN32)
     
@@ -55,8 +47,19 @@ void proc11::process::wait()
         result = waitpid(_process_id,&exit_status,0);
         if (result < 0)
         {
-
+            throw std::runtime_error("failed to wait for pid: " + _process_id);
         }
     }
 #endif
+}
+
+process_id_type current_process_id()
+{
+#if defined(_WIN32)
+    return GetCurrentProcessId();
+#else
+    return getpid();
+#endif
+}
+
 }
