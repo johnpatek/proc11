@@ -37,12 +37,13 @@ jobs:
         cmake --build . --parallel 4
     - name: Unit Test
       shell: bash
+      working-directory: ${{github.workspace}}/build
       run: |
         if [ ${{matrix.os}} == 'ubuntu-latest' ]
         then
-          ${{github.workspace}}/build/test/unittest
+          test/unittest
         fi
         if [ ${{matrix.os}} == 'windows-latest' ]
         then
-          build/test/Debug/unittest.exe
+          test/Debug/unittest.exe
         fi
