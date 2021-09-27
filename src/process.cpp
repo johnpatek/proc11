@@ -22,24 +22,6 @@ void process::execute(std::vector<char*>& args)
     else if (pid == 0)
     {
         int child_status = execv(args.front(),args.data());
-        if (child_status < 0)
-        {
-            std::string error_message;
-            auto err = errno;
-            switch (err)
-            {
-            case EACCES:
-                error_message = "EACCES";
-                break;
-            case EPERM:
-                error_message = "EPERM";
-                break;
-            default:
-                error_message = std::to_string(errno);
-                break;
-            }
-            throw std::runtime_error(error_message);
-        }
         _exit(child_status);
     }
     else

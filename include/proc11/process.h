@@ -11,11 +11,6 @@ class process
 private:
 
 public:
-#if defined(_WIN32)
-    typedef DWORD id;
-#else
-    
-#endif
     process() = default;
 
     process(const std::string& path);
