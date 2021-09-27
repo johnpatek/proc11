@@ -22,6 +22,10 @@ void process::execute(std::vector<char*>& args)
     else if (pid == 0)
     {
         int child_status = execv(args.front(),args.data());
+        if (child_status < 0)
+        {
+            throw std::runtime_error("child process failed to execute");
+        }
         _exit(child_status);
     }
     else
