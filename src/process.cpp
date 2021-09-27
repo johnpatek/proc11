@@ -24,7 +24,7 @@ void process::execute(std::vector<char*>& args)
         int child_status = execv(args.front(),args.data());
         if (child_status < 0)
         {
-            throw std::runtime_error("child process failed to execute");
+            throw std::runtime_error("child process failed to execute " + errno);
         }
         _exit(child_status);
     }
